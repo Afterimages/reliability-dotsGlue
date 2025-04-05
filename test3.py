@@ -97,6 +97,7 @@ nonparam_results = nonparametric_reliability(lifetimes)
 print("\n非参数可靠性分析结果:")
 print(nonparam_results)
 
+
 # 4. 威布尔分布拟合
 def weibull_fit(data):
     weibull_fit = Fitters.Fit_Weibull_2P(failures=data, show_probability_plot=False, print_results=False)
@@ -106,6 +107,49 @@ def weibull_fit(data):
 
 beta, alpha, weibull_model = weibull_fit(lifetimes)
 print(f"\n威布尔分布拟合结果: 形状参数β={beta:.2f}, 尺度参数α={alpha:.2f}")
+
+def plot_combined_curves_single_plot(nonparam_results, beta, alpha):
+    """在同一幅图中绘制四条曲线"""
+    plt.figure(figsize=(10, 6))
+    # 设置全局字体属性
+    plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'WenQuanYi Micro Hei', 'DejaVu Sans']
+    plt.rcParams['axes.unicode_minus'] = False
+    
+    # 准备数据
+    t_empirical = nonparam_results['周期']
+    t_smooth = np.linspace(min(t_empirical)-1, max(t_empirical)+1, 200)
+    
+    # 计算威布尔拟合曲线
+    f_fit = (beta/alpha) * (t_smooth/alpha)**(beta-1) * np.exp(-(t_smooth/alpha)**beta)
+    F_fit = 1 - np.exp(-(t_smooth/alpha)**beta)
+    R_fit = np.exp(-(t_smooth/alpha)**beta)
+    lambda_fit = (beta/alpha) * (t_smooth/alpha)**(beta-1)
+    
+    # 绘制四条曲线
+    plt.plot(t_smooth, f_fit, 'b-', label='概率密度 f(t) (威布尔拟合)')
+    plt.plot(t_smooth, F_fit, 'g-', label='累积失效 F(t) (威布尔拟合)')
+    plt.plot(t_smooth, R_fit, 'r-', label='可靠性 R(t) (威布尔拟合)')
+    plt.plot(t_smooth, lambda_fit, 'm-', label='故障率 λ(t) (威布尔拟合)')
+    
+    # 标记经验数据点
+    plt.scatter(t_empirical, nonparam_results['f(t)'], c='blue', marker='o', s=50, label='经验 f(t)')
+    plt.scatter(t_empirical, nonparam_results['F(t)'], c='green', marker='^', s=50, label='经验 F(t)')
+    plt.scatter(t_empirical, nonparam_results['R(t)'], c='red', marker='s', s=50, label='经验 R(t)')
+    valid_idx = ~np.isnan(nonparam_results['λ(t)'])
+    plt.scatter(t_empirical[valid_idx], nonparam_results['λ(t)'][valid_idx], 
+                c='magenta', marker='D', s=50, label='经验 λ(t)')
+    
+    # 图表装饰
+    plt.xlabel('周期', fontsize=12)
+    plt.ylabel('函数值', fontsize=12)
+    plt.title('可靠性关键函数对比（单图）', fontsize=14)
+    plt.legend(loc='upper right', bbox_to_anchor=(1.3, 1))
+    plt.grid(True, linestyle='--', alpha=0.6)
+    plt.tight_layout()
+    plt.show()
+
+# 调用函数
+plot_combined_curves_single_plot(nonparam_results, beta, alpha)
 
 # 5. 可靠性指标计算
 def reliability_metrics(beta, alpha):
