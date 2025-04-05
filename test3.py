@@ -182,100 +182,109 @@ print("\n关键可靠性指标:")
 print(pd.DataFrame(metrics, index=['值']))
 
 # 6. 可视化分析
-def plot_six_subplots_with_median_ranks(nonparam_results, beta, alpha):
-    """六子图布局：上排f(t)和λ(t)，中排F(t)和R(t)，下排中位秩F(t)和R(t)"""
-    plt.figure(figsize=(16, 18))
+def plot_six_subplots_optimized(nonparam_results, beta, alpha):
+    """优化后的六子图布局，确保所有内容可见"""
+    # 创建更大的画布并调整子图间距
+    plt.figure(figsize=(18, 22))  # 宽度增加，高度大幅增加
+    plt.rcParams['font.size'] = 12  # 调大全局字体
     
-    # 设置全局字体和样式
+    # 设置中文字体
     plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei']
     plt.rcParams['axes.unicode_minus'] = False
     
     # 生成平滑时间轴
     t_smooth = np.linspace(min(lifetimes)-1, max(lifetimes)+1, 200)
     
-    # ========== 上排：f(t) 和 λ(t) ==========
+    # ===== 上排：f(t) 和 λ(t) =====
     # 1. 概率密度函数 f(t)
     ax1 = plt.subplot(3, 2, 1)
     plt.plot(nonparam_results['周期'], nonparam_results['f(t)'], 'bo-', 
-             markersize=8, linewidth=1.5, label='经验值')
+             markersize=6, linewidth=1.2, label='经验值')
     plt.plot(t_smooth, (beta/alpha)*(t_smooth/alpha)**(beta-1)*np.exp(-(t_smooth/alpha)**beta), 
-             'r--', linewidth=2, label='威布尔拟合')
-    plt.xlabel('周期')
-    plt.ylabel('概率密度 f(t)')
-    plt.title('(a) 概率密度函数', y=0.95, loc='left')
-    plt.legend()
+             'r--', linewidth=1.8, label='威布尔拟合')
+    plt.xlabel('周期', fontsize=11)  # 调小坐标轴字体
+    plt.ylabel('概率密度 f(t)', fontsize=11)
+    plt.title('(a) 概率密度函数', y=1, loc='left', fontsize=12)  # 调整标题位置
+    plt.legend(fontsize=10, bbox_to_anchor=(0.7, 1))  # 移动图例位置
     plt.grid(True, linestyle=':', alpha=0.6)
     
     # 2. 故障率函数 λ(t)
     ax2 = plt.subplot(3, 2, 2)
     valid_idx = ~np.isnan(nonparam_results['λ(t)'])
     plt.plot(nonparam_results['周期'][valid_idx], nonparam_results['λ(t)'][valid_idx], 
-             'mo-', markersize=8, linewidth=1.5, label='经验值')
+             'mo-', markersize=6, linewidth=1.2, label='经验值')
     plt.plot(t_smooth, (beta/alpha)*(t_smooth/alpha)**(beta-1), 'r--', 
-             linewidth=2, label='威布尔拟合')
-    plt.xlabel('周期')
-    plt.ylabel('故障率 λ(t)')
-    plt.title('(b) 故障率函数', y=0.95, loc='left')
-    plt.legend()
+             linewidth=1.8, label='威布尔拟合')
+    plt.xlabel('周期', fontsize=11)
+    plt.ylabel('故障率 λ(t)', fontsize=11)
+    plt.title('(b) 故障率函数', y=1, loc='left', fontsize=12)
+    plt.legend(fontsize=10, bbox_to_anchor=(0.7, 1))
     plt.grid(True, linestyle=':', alpha=0.6)
     
-    # ========== 中排：F(t) 和 R(t) ==========
+    # ===== 中排：F(t) 和 R(t) =====
     # 3. 累积失效分布 F(t)
     ax3 = plt.subplot(3, 2, 3)
     plt.plot(nonparam_results['周期'], nonparam_results['F(t)'], 'go-', 
-             markersize=8, linewidth=1.5, label='经验值')
+             markersize=6, linewidth=1.2, label='经验值')
     plt.plot(t_smooth, 1 - np.exp(-(t_smooth/alpha)**beta), 'r--', 
-             linewidth=2, label='威布尔拟合')
-    plt.xlabel('周期')
-    plt.ylabel('累积失效概率 F(t)')
-    plt.title('(c) 累积失效分布', y=0.95, loc='left')
-    plt.legend()
+             linewidth=1.8, label='威布尔拟合')
+    plt.xlabel('周期', fontsize=11)
+    plt.ylabel('累积失效 F(t)', fontsize=11)
+    plt.title('(c) 累积失效分布', y=1, loc='left', fontsize=12)
+    plt.legend(fontsize=10, bbox_to_anchor=(0.7, 1))
     plt.grid(True, linestyle=':', alpha=0.6)
     
     # 4. 可靠性函数 R(t)
     ax4 = plt.subplot(3, 2, 4)
     plt.plot(nonparam_results['周期'], nonparam_results['R(t)'], 'rs-', 
-             markersize=8, linewidth=1.5, label='经验值')
+             markersize=6, linewidth=1.2, label='经验值')
     plt.plot(t_smooth, np.exp(-(t_smooth/alpha)**beta), 'r--', 
-             linewidth=2, label='威布尔拟合')
-    plt.xlabel('周期')
-    plt.ylabel('可靠度 R(t)')
-    plt.title('(d) 可靠性函数', y=0.95, loc='left')
-    plt.legend()
+             linewidth=1.8, label='威布尔拟合')
+    plt.xlabel('周期', fontsize=11)
+    plt.ylabel('可靠度 R(t)', fontsize=11)
+    plt.title('(d) 可靠性函数', y=1, loc='left', fontsize=12)
+    plt.legend(fontsize=10, bbox_to_anchor=(0.7, 1))
     plt.grid(True, linestyle=':', alpha=0.6)
     
-    # ========== 下排：中位秩F(t)和R(t) ==========
+    # ===== 下排：中位秩F(t)和R(t) =====
     # 5. 中位秩累积失效 F(t)
     ax5 = plt.subplot(3, 2, 5)
     plt.plot(nonparam_results['周期'], nonparam_results['中位秩F(t)'], 'yo-', 
-             markersize=8, linewidth=1.5, label='中位秩F(t)')
+             markersize=6, linewidth=1.2, label='中位秩F(t)')
     plt.plot(t_smooth, 1 - np.exp(-(t_smooth/alpha)**beta), 'r--', 
-             linewidth=2, label='威布尔拟合')
-    plt.xlabel('周期')
-    plt.ylabel('中位秩 F(t)')
-    plt.title('(e) 中位秩累积失效', y=0.95, loc='left')
-    plt.legend()
+             linewidth=1.8, label='威布尔拟合')
+    plt.xlabel('周期', fontsize=11)
+    plt.ylabel('中位秩 F(t)', fontsize=11)
+    plt.title('(e) 中位秩累积失效', y=1, loc='left', fontsize=12)
+    plt.legend(fontsize=10, bbox_to_anchor=(0.7, 1))
     plt.grid(True, linestyle=':', alpha=0.6)
     
     # 6. 中位秩可靠性 R(t)
     ax6 = plt.subplot(3, 2, 6)
     plt.plot(nonparam_results['周期'], nonparam_results['中位秩R(t)'], 'co-', 
-             markersize=8, linewidth=1.5, label='中位秩R(t)')
+             markersize=6, linewidth=1.2, label='中位秩R(t)')
     plt.plot(t_smooth, np.exp(-(t_smooth/alpha)**beta), 'r--', 
-             linewidth=2, label='威布尔拟合')
-    plt.xlabel('周期')
-    plt.ylabel('中位秩 R(t)')
-    plt.title('(f) 中位秩可靠性', y=0.95, loc='left')
-    plt.legend()
+             linewidth=1.8, label='威布尔拟合')
+    plt.xlabel('周期', fontsize=11)
+    plt.ylabel('中位秩 R(t)', fontsize=11)
+    plt.title('(f) 中位秩可靠性', y=1, loc='left', fontsize=12)
+    plt.legend(fontsize=10, bbox_to_anchor=(0.7, 1))
     plt.grid(True, linestyle=':', alpha=0.6)
     
     # 全局调整
-    plt.tight_layout()
-    plt.suptitle('可靠性分析全函数对比（含中位秩）', y=1.02, fontsize=16)
+    plt.subplots_adjust(
+        left=0.1,      # 左边距
+        right=0.9,     # 右边距
+        bottom=0.08,   # 底边距
+        top=0.92,      # 顶部空间
+        wspace=0.3,    # 子图水平间距
+        hspace=0.4     # 子图垂直间距
+    )
+    # plt.suptitle('可靠性分析全函数对比', y=0.95, fontsize=14)
     plt.show()
 
 # 调用函数
-plot_six_subplots_with_median_ranks(nonparam_results, beta, alpha)
+plot_six_subplots_optimized(nonparam_results, beta, alpha)
 
 # 7. 威布尔概率图
 def plot_weibull_probability(data, beta, alpha):
