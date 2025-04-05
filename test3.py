@@ -182,64 +182,79 @@ print("\n关键可靠性指标:")
 print(pd.DataFrame(metrics, index=['值']))
 
 # 6. 可视化分析
-def plot_reliability_curves(nonparam_results, beta, alpha):
+def plot_reliability_curves_scatter(nonparam_results, beta, alpha):
     plt.figure(figsize=(15, 10))
-    
     # 设置全局字体属性
     plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'WenQuanYi Micro Hei', 'DejaVu Sans']
     plt.rcParams['axes.unicode_minus'] = False
+
+    # sns.set_style("whitegrid")
     
-    # 经验可靠性函数
+    # 生成平滑的时间轴
+    t_smooth = np.linspace(min(lifetimes)-1, max(lifetimes)+1, 100)
+    
+    # 1. 可靠性函数 R(t)
     plt.subplot(2, 2, 1)
-    plt.step(nonparam_results['周期'], nonparam_results['中位秩R(t)'], where='post', label='经验值')
-    t = np.linspace(min(lifetimes)-1, max(lifetimes)+1, 100)
-    r = np.exp(-(t/alpha)**beta)
-    plt.plot(t, r, 'r-', label='威布尔拟合')
-    plt.xlabel(u'周期')
-    plt.ylabel(u'可靠度 R(t)')
-    plt.title(u'可靠性函数')
+    # 经验数据：散点+连线
+    plt.plot(nonparam_results['周期'], nonparam_results['中位秩R(t)'], 'bo-', 
+             markersize=8, linewidth=1.5, label='经验值')
+    # 威布尔拟合：虚线
+    plt.plot(t_smooth, np.exp(-(t_smooth/alpha)**beta), 'r--', 
+             linewidth=2, label='威布尔拟合')
+    plt.xlabel('周期')
+    plt.ylabel('可靠度 中位秩R(t)')
+    plt.title('可靠性函数')
     plt.legend()
     
-    # 累积失效分布
+    # 2. 累积失效分布 F(t)
     plt.subplot(2, 2, 2)
-    plt.step(nonparam_results['周期'], nonparam_results['中位秩F(t)'], where='post', label='经验值')
-    f = 1 - np.exp(-(t/alpha)**beta)
-    plt.plot(t, f, 'r-', label='威布尔拟合')
-    plt.xlabel(u'周期')
-    plt.ylabel(u'累积失效概率 F(t)')
-    plt.title(u'累积失效分布函数')
+    plt.plot(nonparam_results['周期'], nonparam_results['中位秩F(t)'], 'go-', 
+             markersize=8, linewidth=1.5, label='经验值')
+    plt.plot(t_smooth, 1 - np.exp(-(t_smooth/alpha)**beta), 'r--', 
+             linewidth=2, label='威布尔拟合')
+    plt.xlabel('周期')
+    plt.ylabel('累积失效概率 中位秩F(t)')
+    plt.title('累积失效分布函数')
     plt.legend()
     
-    # 故障率函数
+    # 3. 故障率函数 λ(t)
     plt.subplot(2, 2, 3)
     valid_idx = ~np.isnan(nonparam_results['λ(t)'])
-    plt.step(nonparam_results['周期'][valid_idx], nonparam_results['λ(t)'][valid_idx], 
-             where='post', label='经验值')
-    h = (beta/alpha) * (t/alpha)**(beta-1)
-    plt.plot(t, h, 'r-', label='威布尔拟合')
-    plt.xlabel(u'周期')
-    plt.ylabel(u'故障率 λ(t)')
-    plt.title(u'故障率函数')
+    plt.plot(nonparam_results['周期'][valid_idx], nonparam_results['λ(t)'][valid_idx], 
+             'mo-', markersize=8, linewidth=1.5, label='经验值')
+    plt.plot(t_smooth, (beta/alpha)*(t_smooth/alpha)**(beta-1), 'r--', 
+             linewidth=2, label='威布尔拟合')
+    plt.xlabel('周期')
+    plt.ylabel('故障率 λ(t)')
+    plt.title('故障率函数')
     plt.legend()
     
-    # 概率密度函数
+    # 4. 概率密度函数 f(t)
     plt.subplot(2, 2, 4)
-    plt.hist(lifetimes, bins=10, density=True, alpha=0.6, label='直方图')
-    pdf = (beta/alpha) * (t/alpha)**(beta-1) * np.exp(-(t/alpha)**beta)
-    plt.plot(t, pdf, 'r-', label='威布尔拟合')
-    plt.xlabel(u'周期')
-    plt.ylabel(u'概率密度 f(t)')
-    plt.title(u'概率密度函数')
+    # 直方图保留，添加密度曲线
+    plt.hist(lifetimes, bins=10, density=True, alpha=0.6, color='skyblue', label='直方图')
+    plt.plot(nonparam_results['周期'], nonparam_results['f(t)'], 'co-', 
+             markersize=8, linewidth=1.5, label='经验值')
+    plt.plot(t_smooth, (beta/alpha)*(t_smooth/alpha)**(beta-1)*np.exp(-(t_smooth/alpha)**beta), 
+             'r--', linewidth=2, label='威布尔拟合')
+    plt.xlabel('周期')
+    plt.ylabel('概率密度 f(t)')
+    plt.title('概率密度函数')
     plt.legend()
     
     plt.tight_layout()
+    plt.suptitle('可靠性分析关键函数（散点连线图）', y=1.02, fontsize=14)
     plt.show()
 
-plot_reliability_curves(nonparam_results, beta, alpha)
+# 调用函数
+plot_reliability_curves_scatter(nonparam_results, beta, alpha)
 
 # 7. 威布尔概率图
 def plot_weibull_probability(data, beta, alpha):
     plt.figure(figsize=(8, 6))
+    # 设置全局字体属性
+    plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'WenQuanYi Micro Hei', 'DejaVu Sans']
+    plt.rcParams['axes.unicode_minus'] = False
     
     # 计算经验累积分布函数点
     n = len(data)
