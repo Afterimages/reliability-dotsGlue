@@ -122,8 +122,30 @@ plt.show()
 # 4. 结果对比
 print("\n关键结果对比：")
 print(f"原始点估计: B10={alpha * (-np.log(0.9))**(1/beta):.2f}, α={alpha:.2f}, β={beta:.2f}")
-print(f"蒙特卡洛90% CI: B10=[{np.percentile(sim_b10, 5):.2f}, {np.percentile(sim_b10, 95):.2f}]")
-print(f"Bootstrap95% CI: B10=[{np.percentile(b10_bs, 2.5):.2f}, {np.percentile(b10_bs, 97.5):.2f}]")
+print(f"蒙特卡洛90% CI: B10=[{np.percentile(sim_b10, 5):.2f}, {np.percentile(sim_b10, 95):.2f}],
+      α=[{np.percentile(sim_alpha, 5):.2f}, {np.percentile(sim_alpha, 95):.2f}],
+      β=[{np.percentile(sim_beta, 5):.2f}, {np.percentile(sim_beta, 95):.2f}]")
+print(f"Bootstrap95% CI: B10=[{np.percentile(b10_bs, 2.5):.2f}, {np.percentile(b10_bs, 97.5):.2f}],
+      α=[{np.percentile(alpha_bs, 2.5):.2f}, {np.percentile(alpha_bs, 97.5):.2f}],
+      β=[{np.percentile(beta_bs, 2.5):.2f}, {np.percentile(beta_bs, 97.5):.2f}]")
+
+print("\n=== 可靠性分析最终结果 ===")
+print(f"{'指标':<15}{'原始估计':<15}{'蒙特卡洛(90% CI)':<25}{'Bootstrap(95% CI)':<25}")
+print("-" * 70)
+
+# B10寿命行（修正关键错误）
+print(f"{'B10寿命':<15}{alpha * (-np.log(0.9))**(1/beta):.2f}{'':<13}"
+      f"[{np.percentile(sim_b10, 5):.2f}, {np.percentile(sim_b10, 95):.2f}]{'':<10}"
+      f"[{np.percentile(b10_bs, 2.5):.2f}, {np.percentile(b10_bs, 97.5):.2f}]")
+
+# 其他参数行
+print(f"{'尺度参数α':<15}{alpha:.2f}{'':<13}"
+      f"[{np.percentile(sim_alpha, 5):.2f}, {np.percentile(sim_alpha, 95):.2f}]{'':<10}"
+      f"[{np.percentile(alpha_bs, 2.5):.2f}, {np.percentile(alpha_bs, 97.5):.2f}]")
+
+print(f"{'形状参数β':<15}{beta:.2f}{'':<13}"
+      f"[{np.percentile(sim_beta, 5):.2f}, {np.percentile(sim_beta, 95):.2f}]{'':<10}"
+      f"[{np.percentile(beta_bs, 2.5):.2f}, {np.percentile(beta_bs, 97.5):.2f}]")
 
 
 # 5. 保存关键数据
