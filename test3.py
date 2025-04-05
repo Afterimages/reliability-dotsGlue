@@ -108,6 +108,10 @@ def weibull_fit(data):
 beta, alpha, weibull_model = weibull_fit(lifetimes)
 print(f"\n威布尔分布拟合结果: 形状参数β={beta:.2f}, 尺度参数α={alpha:.2f}")
 
+from scipy.stats import kstest
+D, p = kstest(lifetimes, lambda x: 1 - np.exp(-(x/alpha)**beta))
+print(f"K-S检验p值={p:.3f} (p>0.05接受威布尔假设)")
+
 def plot_combined_curves_with_connections(nonparam_results, beta, alpha):
     """在同一图中绘制四条曲线：经验值带折线，威布尔拟合用虚线"""
     plt.figure(figsize=(12, 7))
