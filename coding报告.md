@@ -231,7 +231,7 @@ graph TD
 
 2. **周期数据威布尔拟合结果**
 
-   ![image-20250406020305318](D:\hello_zhu_desktop\研一\研一课程\可靠性\pre\code\assets\image-20250406020305318.png)
+   ![image-20250406020305318](\assets\image-20250406020305318.png)
 
    ```
    形状参数β=6.37, 尺度参数α=16.81
@@ -239,10 +239,10 @@ graph TD
 
 3. **可视化效果**
 
-   ![image-20250406015156364](D:\hello_zhu_desktop\研一\研一课程\可靠性\pre\code\assets\image-20250406015156364.png)
+   ![image-20250406015156364](\assets\image-20250406015156364.png)
 
    - 六子图对比：
-     ![image-20250406015215026](D:\hello_zhu_desktop\研一\研一课程\可靠性\pre\code\assets\image-20250406015215026.png)
+     ![image-20250406015215026](\assets\image-20250406015215026.png)
      
    - 周期数据威布尔概率图：
 
@@ -252,7 +252,7 @@ graph TD
      weibull_fit.plot()  # 线性度越好，拟合越合理
      ```
 
-     ![image-20250406015230253](D:\hello_zhu_desktop\研一\研一课程\可靠性\pre\code\assets\image-20250406015230253.png)
+     ![image-20250406015230253](\assets\image-20250406015230253.png)
 
    - **统计检验**（如K-S检验）：
 
@@ -262,7 +262,7 @@ graph TD
      print(f"K-S检验p值={p:.3f} (p>0.05接受威布尔假设)")
      ```
 
-​			![image-20250406021716967](D:\hello_zhu_desktop\研一\研一课程\可靠性\pre\code\assets\image-20250406021716967.png)
+​			![image-20250406021716967](\assets\image-20250406021716967.png)
 
 - **关键可靠性指标**
 
@@ -313,11 +313,11 @@ graph TD
 - 基于拟合参数生成虚拟数据集
 - 重复1000次得到参数分布
 
-![image-20250406031216653](D:\hello_zhu_desktop\研一\研一课程\可靠性\pre\code\assets\image-20250406031216653.png)
+![image-20250406031216653](\assets\image-20250406031216653.png)
 
 Bootstrap重采样1000次
 
-![image-20250406031303555](D:\hello_zhu_desktop\研一\研一课程\可靠性\pre\code\assets\image-20250406031303555.png)
+![image-20250406031303555](\assets\image-20250406031303555.png)
 
 ##### 结果对比表
 | 指标          | 蒙特卡洛仿真 (90% CI) | Bootstrap (95% CI) | 原始点估计 |
@@ -326,7 +326,7 @@ Bootstrap重采样1000次
 | **尺度参数α** | [15.75, 17.79]        | [15.46, 18.01]     | 16.81      |
 | **形状参数β** | [5.03, 9.19]          | [5.22, 8.93]       | 6.37       |
 
-![image-20250406031717163](D:\hello_zhu_desktop\研一\研一课程\可靠性\pre\code\assets\image-20250406031717163.png)
+![image-20250406031717163](\assets\image-20250406031717163.png)
 
 **可靠性决策**：
    - 以Bootstrap的95%置信区间为准，B10寿命有95%概率在[10.38, 13.66]周期之间
