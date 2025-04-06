@@ -1,0 +1,3 @@
+test3和monte_test是报告中用到的代码.
+test3做描述性统计和威布尔拟合，monte_test做蒙特卡洛仿真和bootstrap。
+其中，monte_test中，最后输出区间的地方可能会运行错误，但不影响需要的结果，懒得改。
