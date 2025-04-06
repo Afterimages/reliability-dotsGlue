@@ -1,10 +1,60 @@
-以下是该可靠性分析代码的完整技术报告，包含实现结构、关键公式和原理说明：
+
 
 ---
 
 ### **可靠性分析技术报告**
 
 #### 一、代码结构概述
+
+```mermaid
+graph TD
+    %% 核心实验流程
+    A[20个样本寿命数据] --> B[排序和清洗]
+    B --> C[威布尔分布拟合]
+    C --> D[关键参数估计]
+    D --> E["α (尺度参数)<br>β (形状参数)<br>B10寿命"]
+    
+    %% 主要分析结果
+    E --> F[绘制可靠性曲线]
+    F --> G[概率密度函数]
+    F --> H[累积失效分布]
+    F --> I[故障率函数]
+    
+    %% 补充验证实验
+    E --> J{验证分析}
+    J -->|参数不确定性| K[蒙特卡洛仿真]
+    J -->|数据波动性| L[Bootstrap分析]
+    
+    K --> K1[生成5000虚拟数据集]
+    K1 --> K2[计算参数分布]
+    K2 --> K3["90%置信区间<br>(B10/α/β)"]
+    
+    L --> L1[5000次重采样]
+    L1 --> L2[计算参数分布]
+    L2 --> L3["95%置信区间<br>(B10/α/β)"]
+    
+    %% 结果整合
+    K3 --> M[结果对比表]
+    L3 --> M
+    M --> N{工程决策}
+    N -->|β>1.5| O["预防性维护周期 = B10下限(10.78)"]
+    N -->|β<1.5| P[检查早期失效]
+    
+    %% 样式设置
+    style A fill:#F9E79F,stroke:#333
+    style B fill:#F9E79F,stroke:#333
+    style C fill:#AED6F1,stroke:#333
+    style D fill:#D5F5E3,stroke:#333
+    style E fill:#ABEBC6,stroke:#333
+    style F fill:#D4E6F1,stroke:#333
+    style K fill:#F5B7B1,stroke:#333
+    style L fill:#D2B4DE,stroke:#333
+    style M fill:#E8F8F5,stroke:#333
+    style N fill:#FADBD8,stroke:#333
+```
+
+
+
 ```mermaid
 graph TD
     A[数据加载] --> B[描述性统计]
@@ -97,7 +147,7 @@ graph TD
 #### 三、关键公式与原理
 
 1. **威布尔分布函数**
-   
+  
    - 概率密度函数（PDF）：
      $$
      f(t) = \frac{\beta}{\alpha}\left(\frac{t}{\alpha}\right)^{\beta-1}e^{-(t/\alpha)^\beta}
@@ -235,7 +285,6 @@ graph TD
   \alpha = t \ \text{||} \ F(t)=1-e^{-1} \approx 0.632 \ \text{时的寿命值}
   $$
   
-
 - **形状参数(β)**：威布尔分布形状参数（6.37395，β>1表示耗损型失效模式）
   $$
   \beta \ \text{通过威布尔概率图或最大似然估计求得}
@@ -257,9 +306,16 @@ graph TD
 
 #### 六、扩展改进方向
 
-**蒙特卡洛仿真**：
+**蒙特卡洛仿真+Bootstrap重采样**
+
+蒙特卡洛仿真（Monte Carlo Simulation）是一种通过**随机抽样**和**统计计算**来模拟复杂系统或解决数学问题的计算方法。其核心思想是通过生成大量随机样本，利用概率统计原理获得问题的近似解。
+
+- 基于拟合参数生成虚拟数据集
+- 重复1000次得到参数分布
 
 ![image-20250406031216653](D:\hello_zhu_desktop\研一\研一课程\可靠性\pre\code\assets\image-20250406031216653.png)
+
+Bootstrap重采样1000次
 
 ![image-20250406031303555](D:\hello_zhu_desktop\研一\研一课程\可靠性\pre\code\assets\image-20250406031303555.png)
 
